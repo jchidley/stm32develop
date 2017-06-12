@@ -49,8 +49,7 @@ char *morseNumbers[10] = {
 	"----.",	// 9
 };
 
-void signalCode( char *morseCode, void (*ledOn)(void), void (*ledOff)(void), 
-	void (*delay)(uint32_t), uint32_t d )
+void signalCode( char *morseCode, void (*ledOn)(void), void (*ledOff)(void), void (*delay)(uint32_t), uint32_t d )
 {
 // Everything is based on time units:
 // 1 for dot 
