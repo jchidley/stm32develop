@@ -1,5 +1,6 @@
 #include "stm32f072xb.h"
-#define PIN (5)
+#define LED_PIN (7)		// from the data sheet 7C 5A
+#define LED_PORT (GPIOC)	// Also need to enable the correct port with RCC
 #include "morse.h"
 #define TIMING_DELAY (240UL) 
 /** 
@@ -30,10 +31,6 @@ void Systick_Init(void)
 */
 void morseTimingDelay()
 {
-	// wait for a bunch of ops to be complete, timing inexact
-	// for (uint32_t volatile n = 0; n < 200000UL; n++)
-	//	;
-	
 	// Execute a nop until a certain amount of time has passed
 	TimingDelay = TIMING_DELAY;
 	while(TimingDelay > 0)
@@ -47,7 +44,7 @@ void morseTimingDelay()
 */
 void ledOn()
 {
-	GPIOA->BSRR = (1UL << PIN);
+	LED_PORT->BSRR = (1UL << LED_PIN);
 }
 
 /**
@@ -57,7 +54,7 @@ void ledOn()
 */
 void ledOff()
 {
-	GPIOA->BSRR = ((1UL << PIN) << 16);
+	LED_PORT->BSRR = ((1UL << LED_PIN) << 16);
 }
 
 /**
@@ -73,12 +70,12 @@ void SysTick_Handler(void)
 
 int main()
 {	
-	RCC->AHBENR = RCC_AHBENR_GPIOAEN;   // Port A enable
-	GPIOA->MODER |= (1UL << 2 * PIN);   // Output
-	GPIOA->OTYPER &= ~(1UL << 1 * PIN); // Output push-pull
-	GPIOA->OSPEEDR |= (3UL << 0 * PIN); // Low speed
-	GPIOA->PUPDR &= ~(3UL << 2 * PIN);  // No pull-up, pull-down
-	
+	RCC->AHBENR = RCC_AHBENR_GPIOCEN;		// Port C enable
+	LED_PORT->MODER |= (1UL << 2 * LED_PIN);	// Output
+	LED_PORT->OTYPER &= ~(1UL << 1 * LED_PIN);	// Output push-pull
+	LED_PORT->OSPEEDR |= (3UL << 0 * LED_PIN);	// Low speed
+	LED_PORT->PUPDR &= ~(3UL << 2 * LED_PIN);	// No pull-up, pull-down
+
 	Systick_Init();
 
 	// Signal startup to the human
@@ -93,6 +90,4 @@ int main()
 		// "k" - ITT - give me work!
 		messageSend("jack ", ledOn, ledOff, morseTimingDelay);
 	}
-	// we're not going to get here but...
-	// messageSend(">", ledOn, ledOff, morseTimingDelay);
 }
