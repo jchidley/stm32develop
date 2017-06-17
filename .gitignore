@@ -1,1 +1,5 @@
 .vscode/
+Keil-Blink/Listings/
+Keil-Blink/Objects/
+Keil-Blink/RTE/_Target_1/
+*.bak
