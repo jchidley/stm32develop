@@ -1,14 +1,4 @@
-#include "stm32f072xb.h"
-#define LED_PIN (7)		// from the data sheet 7C 5A
-#define LED_PORT (GPIOC)	// Also need to enable the correct port with RCC
-#include "morse.h"
-#define TIMING_DELAY (240UL) 
-/** 
-* 50 - 60ms, 20 words a minute - highest level of amateur license
-* 200 - 240ms, 5 wpm - last defined minimum
-* PARIS is the 'standard' word, it's 50 units.
-* CODEX is another word, it's 60 units.
-*/
+#include "main.h"
 
 // I don't like globals.  There must be a better way
 uint32_t volatile TimingDelay = 0UL;
@@ -70,7 +60,7 @@ void SysTick_Handler(void)
 
 int main()
 {	
-	RCC->AHBENR = RCC_AHBENR_GPIOCEN;		// Port C enable
+	RCC->AHBENR = ABH_GPIO_PORT_ENABLE;		// set in main.h
 	LED_PORT->MODER |= (1UL << 2 * LED_PIN);	// Output
 	LED_PORT->OTYPER &= ~(1UL << 1 * LED_PIN);	// Output push-pull
 	LED_PORT->OSPEEDR |= (3UL << 0 * LED_PIN);	// Low speed
@@ -81,13 +71,9 @@ int main()
 	// Signal startup to the human
 	messageSend("<", ledOn, ledOff, morseTimingDelay);
 
-	uint64_t tmpInt = (uint64_t)1;
-	uint64_t *tmp = &tmpInt;
-	memset(tmp, 0xf0, 5);
-
 	while (1)
 	{
 		// "k" - ITT - give me work!
-		messageSend("jack ", ledOn, ledOff, morseTimingDelay);
+		messageSend("k", ledOn, ledOff, morseTimingDelay);
 	}
 }

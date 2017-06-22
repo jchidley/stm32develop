@@ -41,8 +41,13 @@ let formatIt (x:string, y:char) =
     let spaces = String.replicate (10 - x.Length) " "
     "\"" + x + "\"," + spaces + "// " + y.ToString()
     
+let rAlpha = Seq.zip (chopUp str) {'a'..'z'} 
+rAlpha 
+    |> Seq.map (fun (x, y) -> formatIt (x, y) ) 
+    |> Seq.iter (fun x -> printfn "%s" x)
 
-Seq.zip (chopUp str) {'a'..'z'} |> Seq.map (fun (x, y) -> formatIt (x, y) ) |> Seq.iter (fun x -> printfn "%s" x)
+Seq.sortBy (fun (x,y) -> String.length x) rAlpha 
+    |> Seq.iter (fun (x,y) -> printfn "%s, %s" x (string y))
 
 let num = """
 	{ '0', "-----" },
@@ -75,8 +80,6 @@ let sym = """
     { '<', "-.-.-" }, 
 	{ '@', ".--.-." },
 """
-
-
 
 Seq.zip (chopUp num) {'0'..'9'} |> Seq.map (fun (x, y) -> formatIt (x, y) ) |> Seq.iter (fun x -> printfn "%s" x)
 chopUp sym
